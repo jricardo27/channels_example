@@ -1,0 +1,43 @@
+#!/usr/bin/env bash
+# This script requires bash
+
+PYTHON=$(which python3.5 || which python3)
+PYTHON_ENV='python_env'
+
+# It is possible to specify the version of python to include in the virtualenv
+if [ $1 ]; then
+    PYTHON="/usr/bin/python$1"
+    PYTHON_ENV="python_env$1"
+fi
+
+if [ -z $VIRTUAL_ENV ]; then
+    if [ -f "$PYTHON_ENV/bin/activate" ]; then
+        . ./$PYTHON_ENV/bin/activate
+
+        if [[ ! $PYTHON_ENV -ef $VIRTUAL_ENV ]]; then
+            deactivate
+            echo -e '\e[0;1;31mYour virtualenv points to the wrong folder'
+            echo -e 'Please delete it and source this script again'
+
+            exit 1
+        fi
+    else
+        # This will install pip and virtualenv
+        $PYTHON install.py virtualenv
+
+        virtualenv -p $PYTHON $PYTHON_ENV
+        . ./$PYTHON_ENV/bin/activate
+    fi
+
+    ./refreshenv
+    # This should install brew on OS X and swig, node, mysql
+    ./install.py
+
+    export PATH=$PATH:$(npm bin)
+else
+    echo -e "\e[0;1;31mAlready in a virtualenv.\033[0m"
+fi
+
+echo "Installing Python packages"
+pip install --upgrade pip
+yes w | pip install -r requirements.txt
