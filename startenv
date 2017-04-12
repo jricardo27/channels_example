@@ -41,3 +41,7 @@ fi
 echo "Installing Python packages"
 pip install --upgrade pip
 yes w | pip install -r requirements.txt
+
+
+echo "Installing NPM packages"
+npm install

@@ -1,2 +1,7 @@
 __pycache__/
+failed_*.html
+failed_*.png
+geckodriver.log
+ghostdriver.log
+node_modules
 python_env
