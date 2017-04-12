@@ -10,7 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.10/ref/settings/
 """
 
+import environ
 import os
+
+ROOT_DIR = environ.Path(__file__) - 1
+env = environ.Env()
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -75,12 +79,10 @@ WSGI_APPLICATION = 'channels_example.wsgi.application'
 # https://docs.djangoproject.com/en/1.10/ref/settings/#databases
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': 'channels_example',
-        'USER': 'developer',
-        'PASSWORD': '123',
-    }
+    'default': env.db(
+        'DATABASE_URL',
+        default='postgresql://developer:123@127.0.0.1:5432/channels_example'
+    ),
 }
 
 
@@ -122,4 +124,4 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GHERKIN_TEST_CLASS = 'aloe_django.TestCase'
+GHERKIN_TEST_CLASS = env('GHERKIN_TEST_CLASS', default='aloe_django.TestCase')
