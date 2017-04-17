@@ -29,19 +29,17 @@ if [ -z $VIRTUAL_ENV ]; then
         . ./$PYTHON_ENV/bin/activate
     fi
 
-    ./refreshenv
-    # This should install brew on OS X and swig, node, mysql
-    ./install.py
-
     export PATH=$PATH:$(npm bin)
 else
     echo -e "\e[0;1;31mAlready in a virtualenv.\033[0m"
 fi
 
-echo "Installing Python packages"
+echo "\n\e[32m--------------------------\033[0m"
+echo "\e[32mInstalling Python packages\033[0m"
 pip install --upgrade pip
 yes w | pip install -r requirements.txt
 
 
-echo "Installing NPM packages"
+echo "\n\e[32m-----------------------\033[0m"
+echo "\e[32mInstalling NPM packages\033[0m"
 npm install
