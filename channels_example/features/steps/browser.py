@@ -30,7 +30,7 @@ def with_browser():
 def browser_type():
     """Browser type selected for the tests."""
 
-    return os.environ.get('BROWSER_TYPE', 'firefox')
+    return os.environ.get('BROWSER_TYPE', 'chrome')
 
 
 def create_browser():
