@@ -158,5 +158,5 @@ os.environ.setdefault('NOSE_LOGFILTER', '-selenium')
 # TestCase class to use to run the tests.
 GHERKIN_TEST_CLASS = env(
     'GHERKIN_TEST_CLASS',
-    default='channels_example.test.AloeChannelLiveServerTestCase',
+    default='aloe_django.TestCase',
 )
