@@ -21,4 +21,4 @@ install:
 before_script:
   - psql -c 'create database channels_example;' -U postgres
 
-script: BROWSER_TYPE=phantomjs ./manage.py harvest
+script: BROWSER_TYPE=phantomjs ./manage.py harvest -v 3
