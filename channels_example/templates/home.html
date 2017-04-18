@@ -8,6 +8,44 @@
         </div>
     </div>
     <div class="row">
+        <div class="col-xs-2">
+            Connection Status:
+        </div>
+        <div class="col-xs-2">
+            <span id="status-box" class="label label-default right">
+                Disconected
+            </span>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-2">
+            Server Time:
+        </div>
+        <div class="col-xs-2">
+            <custom-tag id="server-time">undefined</custom-tag>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-xs-1"><br></div>
+    </div>
+    <div class="row">
+        <div class="col-xs-1"></div>
+        <div class="col-xs-1">
+            <button type="button" id="connectButton" class="btn btn-primary btn-sm"
+                  onclick="connect()">
+                Connect
+            </button>
+        </div>
+        <div class="col-xs-1">
+            <button type="button" id="retrieveButton"
+                  class="btn btn-primary btn-sm"
+                  onclick="retrieveServerTime()">
+                Retrieve Server Time
+            </button>
+        </div>
+    </div>
+    <br>
+    <div class="row">
         <div class="col-xs-12">
             <h2>List of users:</h2>
         </div>
@@ -24,5 +62,91 @@
 {% endblock %}
 
 {% block javascript %}
-    <script src="{% static 'main.js' %}"></script>
+    <script src="{% static 'channels/js/websocketbridge.js' %}"></script>
+
+    <script>
+        const webSocketBridge = new channels.WebSocketBridge();
+
+        /*
+         Show current Websocket connection status.
+
+         @param status: A string with one of the following values:
+         connected
+         disconnected
+         reconnected
+         error
+
+         When marking a reconnection, the indicator will be displayed in orange
+         with the text "Reconnected" and will turn green with text "Connected"
+         after 2 seconds.
+         */
+        function statusBox(status) {
+            var control = $("#status-box");
+            var classes = {
+                "disconnected": "default",
+                "connected": "success",
+                "reconnected": "warning",
+                "error": "danger"
+            };
+
+            // Remove current status.
+            for (var statusKey in classes) {
+                control.removeClass("label-" + classes[statusKey]);
+            }
+
+            control.addClass("label-" + classes[status]);
+            control.text(status);
+
+            if (status == "reconnected") {
+                setTimeout(function () {
+                    statusBox("connected");
+                }, 2000);
+            }
+        }
+
+        function isConnected(connected) {
+            if (connected) {
+                statusBox("connected");
+                $("#connectButton").attr("disabled", "disabled");
+                $("#retrieveButton").removeAttr("disabled");
+            } else {
+                statusBox("disconnected");
+                $("#connectButton").removeAttr("disabled");
+                $("#retrieveButton").attr("disabled", "disabled");
+            }
+        }
+
+        function retrieveServerTime() {
+            webSocketBridge.stream("server_time").send({action: "get_time"});
+        }
+
+        function showServerTime(message) {
+            var span = $("#server-time");
+            console.log(message.serverTime);
+            span.text(message['serverTime'] + ' UTC');
+        }
+
+        function connect() {
+            // Connect and prevent it reconnecting ad infinitum.
+            webSocketBridge.connect("/ws/", undefined, {
+                maxRetries: 1
+            });
+            isConnected(true);
+
+            webSocketBridge.socket.addEventListener("close", function () {
+                isConnected(false);
+            });
+
+            webSocketBridge.socket.addEventListener("open", function () {
+                isConnected(true);
+            });
+
+            // Handle messages from the server.
+            webSocketBridge.listen();
+
+            webSocketBridge.demultiplex("server_time", function (action, stream) {
+                showServerTime(action);
+            });
+        }
+    </script>
 {% endblock %}
