@@ -1,5 +1,6 @@
 asgi-redis==1.3.0
-git+https://github.com/django/channels@31cd68c89bfe302b91aac6b096e94d3c074e3b72#egg=channels
+git+https://github.com/django/channels@5445d317fd716020cda2591f0d33fdff478abf2f#egg=channels
+git+https://github.com/django/daphne@bd03fabce6d110016365a528dd6185ee00ce71a7#egg=daphne
 Django==1.11.0
 django-environ==0.4.1
 psycopg2==2.7.1

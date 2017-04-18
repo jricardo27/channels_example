@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
 
+    'channels',
     'aloe_django',
 ]
 
@@ -124,4 +125,38 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
-GHERKIN_TEST_CLASS = env('GHERKIN_TEST_CLASS', default='aloe_django.TestCase')
+
+# ----------------------------------------------------------
+# Django Channels
+# ----------------------------------------------------------
+
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'asgi_redis.RedisChannelLayer',
+        'CONFIG': {
+            'hosts': [(
+                env('REDIS_SERVER_NAME', default='localhost'),
+                env('REDIS_SERVER_PORT', default=6379),
+            )],
+        },
+        'TEST_CONFIG': {
+            'hosts': [(
+                env('REDIS_SERVER_NAME', default='localhost'),
+                env('REDIS_SERVER_PORT', default=6379),
+            )],
+        },
+        'ROUTING': 'channels_example.routing.CHANNEL_ROUTING',
+    },
+}
+
+
+# ----------------------------------------------------------
+# Test Configuration
+# ----------------------------------------------------------
+os.environ.setdefault('NOSE_LOGFILTER', '-selenium')
+
+# TestCase class to use to run the tests.
+GHERKIN_TEST_CLASS = env(
+    'GHERKIN_TEST_CLASS',
+    default='channels_example.test.AloeChannelLiveServerTestCase',
+)
