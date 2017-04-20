@@ -48,6 +48,9 @@ def mock_time(self, datestr, hour, minute):
     ])
     world.freezer.start()
 
+    # Restart Channels worker so it gets caught under Freezegun spell.
+    world.test_case.restart_worker()
+
 
 @after.each_example
 def unfreeze_time(*args):
