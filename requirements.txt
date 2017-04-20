@@ -6,7 +6,7 @@ django-environ==0.4.1
 psycopg2==2.7.1
 redis==2.10.5
 
-aloe==0.1.12
-aloe_django==0.1.3
+git+https://github.com/aloetesting/aloe@e8392800bce42faffd5e94ea358dbbb69b7989fa#egg=aloe
+git+https://github.com/jricardo27/aloe_django@c757f8fe27b37756482f4de7ee246284c294e550#egg=aloe_django
 aloe_webdriver==0.5.6
 xvfbwrapper==0.2.9
