@@ -128,4 +128,4 @@ STATICFILES_DIRS = [os.path.join(BASE_DIR, 'channels_example/static')]
 STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Tests
-GHERKIN_TEST_CLASS = env('GHERKIN_TEST_CLASS', default='aloe_django.TestCase')
+GHERKIN_TEST_CLASS = 'channels_example.test.TestCase'
