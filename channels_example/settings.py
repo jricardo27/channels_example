@@ -125,6 +125,7 @@ USE_TZ = True
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static_root')
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'channels_example/static')]
+STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.ManifestStaticFilesStorage'
 
 # Tests
 GHERKIN_TEST_CLASS = env('GHERKIN_TEST_CLASS', default='aloe_django.TestCase')
