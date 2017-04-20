@@ -5,3 +5,4 @@ geckodriver.log
 ghostdriver.log
 node_modules
 python_env
+static_root
