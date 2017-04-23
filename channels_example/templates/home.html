@@ -7,7 +7,16 @@
     <title>Channels Example</title>
 </head>
 <body>
-    <p>Hello World</p>
+    <h1>Hello World</h1>
+    <br>
+    {% if users %}
+        <h2>List of users:</h2>
+        {% for user in users %}
+            <p>{{ user.username }}</p>
+        {% endfor %}
+    {% else %}
+        <p>The are no registered users.</p>
+    {% endif %}
     <script src="{% static 'main.js' %}"></script>
 </body>
 </html>
