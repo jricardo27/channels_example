@@ -1,22 +1,169 @@
 {% load staticfiles %}
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <title>Channels Example</title>
+    <link rel="stylesheet"
+          href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u"
+          crossorigin="anonymous">
 </head>
 <body>
-    <h1>Hello World</h1>
-    <br>
-    {% if users %}
-        <h2>List of users:</h2>
-        {% for user in users %}
-            <p>{{ user.username }}</p>
-        {% endfor %}
-    {% else %}
-        <p>The are no registered users.</p>
-    {% endif %}
-    <script src="{% static 'main.js' %}"></script>
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12">
+                <h1>Hello World</h1>
+            </div>
+            <div class="col-xs-12">
+                <p>It was {{ server_time }} on the server when this page was loaded.</p>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                Connection Status:
+            </div>
+            <div class="col-xs-2">
+                <span id="status-box" class="label label-default right">
+                    Disconected
+                </span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-2">
+                Server Time:
+            </div>
+            <div class="col-xs-2">
+                <custom-tag id="server-time">undefined</custom-tag>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-1"><br></div>
+        </div>
+        <div class="row">
+            <div class="col-xs-1"></div>
+            <div class="col-xs-1">
+                <button type="button" id="connectButton" class="btn btn-primary btn-sm"
+                      onclick="connect()">
+                    Connect
+                </button>
+            </div>
+            <div class="col-xs-1">
+                <button type="button" id="retrieveButton"
+                      class="btn btn-primary btn-sm"
+                      onclick="retrieveServerTime()">
+                    Retrieve Server Time
+                </button>
+            </div>
+        </div>
+        <br>
+        <div class="row">
+            <div class="col-xs-12">
+                <h2>List of users:</h2>
+            </div>
+            <div class="col-xs-12">
+                {% if users %}
+                    {% for user in users %}
+                        <p>{{ user.username }}</p>
+                    {% endfor %}
+                {% else %}
+                    <p>The are no registered users.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <script
+            src="https://code.jquery.com/jquery-2.2.4.min.js"
+            integrity="sha256-BbhdlvQf/xTY9gja0Dq3HiwQF8LaCRTXxZKRutelT44="
+            crossorigin="anonymous">
+    </script>
+    <script src="{% static 'channels/js/websocketbridge.js' %}"></script>
+
+    <script>
+        const webSocketBridge = new channels.WebSocketBridge();
+
+        /*
+         Show current Websocket connection status.
+
+         @param status: A string with one of the following values:
+         connected
+         disconnected
+         reconnected
+         error
+
+         When marking a reconnection, the indicator will be displayed in orange
+         with the text "Reconnected" and will turn green with text "Connected"
+         after 2 seconds.
+         */
+        function statusBox(status) {
+            var control = $("#status-box");
+            var classes = {
+                "disconnected": "default",
+                "connected": "success",
+                "reconnected": "warning",
+                "error": "danger"
+            };
+
+            // Remove current status.
+            for (var statusKey in classes) {
+                control.removeClass("label-" + classes[statusKey]);
+            }
+
+            control.addClass("label-" + classes[status]);
+            control.text(status);
+
+            if (status == "reconnected") {
+                setTimeout(function () {
+                    statusBox("connected");
+                }, 2000);
+            }
+        }
+
+        function isConnected(connected) {
+            if (connected) {
+                statusBox("connected");
+                $("#connectButton").attr("disabled", "disabled");
+                $("#retrieveButton").removeAttr("disabled");
+            } else {
+                statusBox("disconnected");
+                $("#connectButton").removeAttr("disabled");
+                $("#retrieveButton").attr("disabled", "disabled");
+            }
+        }
+
+        function retrieveServerTime() {
+            webSocketBridge.stream("server_time").send({action: "get_time"});
+        }
+
+        function showServerTime(message) {
+            var span = $("#server-time");
+            console.log(message.serverTime);
+            span.text(message['serverTime'] + ' UTC');
+        }
+
+        function connect() {
+            // Connect and prevent it reconnecting ad infinitum.
+            webSocketBridge.connect("/ws/", undefined, {
+                maxRetries: 1
+            });
+            isConnected(true);
+
+            webSocketBridge.socket.addEventListener("close", function () {
+                isConnected(false);
+            });
+
+            webSocketBridge.socket.addEventListener("open", function () {
+                isConnected(true);
+            });
+
+            // Handle messages from the server.
+            webSocketBridge.listen();
+
+            webSocketBridge.demultiplex("server_time", function (action, stream) {
+                showServerTime(action);
+            });
+        }
+    </script>
 </body>
 </html>

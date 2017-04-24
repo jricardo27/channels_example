@@ -1,8 +1,14 @@
+asgi-redis==1.3.0
+git+https://github.com/django/channels@5445d317fd716020cda2591f0d33fdff478abf2f#egg=channels
+git+https://github.com/django/daphne@bd03fabce6d110016365a528dd6185ee00ce71a7#egg=daphne
 Django==1.11.0
 django-environ==0.4.1
 psycopg2==2.7.1
+redis==2.10.5
 
 aloe==0.1.12
 aloe_django==0.1.3
 aloe_webdriver==0.5.6
+freezegun==0.3.8
+pytz==2017.2
 xvfbwrapper==0.2.9
