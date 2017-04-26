@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {{ block.super }} - Login
+{% endblock title %}
+
+{% block content %}
+    <h1>Login</h1>
+
+    {% if next and user.is_authenticated %}
+        <div class="alert alert-info" role="alert">
+            Your account doesn't have access to this page. To proceed, please login with an account that has access.
+        </div>
+    {% endif %}
+
+    <form method="post" action="{% url 'login' %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            {{ form }}
+        </div>
+
+        <button type="submit" class="btn btn-primary block full-width m-b">Login</button>
+        <input type="hidden" name="next" value="{{ next }}" />
+    </form>
+
+    <p>
+        <a href="{% url 'password_reset' %}">Lost password?</a>
+    </p>
+{% endblock %}
