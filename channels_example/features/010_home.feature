@@ -6,8 +6,8 @@ Feature: Test home page
         And I should see "The are no registered users."
 
 
-    Scenario: See list of users:
-        Given I have a user in the database:
+    Scenario: See list of users
+        Given I have users in the database:
             | username   |
             | test_user1 |
             | test_user2 |
