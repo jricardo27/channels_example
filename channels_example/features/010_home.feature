@@ -15,3 +15,9 @@ Feature: Test home page
         Then I should see "List of users:"
         And I should see "test_user1"
         And I should see "test_user2"
+
+
+    Scenario: Connect websocket
+        When I visit site page "/"
+        And I press "Connect"
+        Then I should see "connected"
