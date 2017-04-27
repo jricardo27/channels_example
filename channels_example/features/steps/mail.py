@@ -9,5 +9,3 @@ def mail_sent_count(self, count):
     actual = len(mail.outbox)
     assert expected == actual, \
         "Expected to send {0} email(s), got {1}.".format(expected, actual)
-
-from django.contrib.auth import views as auth_views
