@@ -1,6 +1,14 @@
 from django.core import mail
 
-from aloe import step
+from aloe import before, step
+
+from channels_example.mail import MAIL_STORAGE
+from channels_example.tools.persitentlist import PersistentList
+
+
+@before.each_example
+def link_persistent_outbox(*args, **kwargs):
+    mail.outbox = PersistentList(MAIL_STORAGE)
 
 
 @step(r'(\d+) emails? has been sent')
