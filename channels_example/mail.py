@@ -1,36 +1,14 @@
-import os
-import shelve
+from django.core import mail
+from django.core.mail.backends.locmem import EmailBackend as LocMemBackend
 
-from django.core.mail.backends.base import BaseEmailBackend
-
+from channels_example.tools.persitentlist import PersistentList
 
 MAIL_STORAGE = '.mail_storage'
-OUTBOX = 'outbox'
 
-
-class EmailBackend(BaseEmailBackend):
+class EmailBackend(LocMemBackend):
     def __init__(self, *args, **kwargs):
         super(EmailBackend, self).__init__(*args, **kwargs)
 
-        # Clean outbox.
-        try:
-            os.remove(MAIL_STORAGE)
-        except OSError:
-            pass
-
-    def send_messages(self, messages):
-        """Redirect messages to the dummy outbox"""
-        msg_count = 0
-
-        for message in messages:  # .message() triggers header validation
-            message.message()
-
-            storage = shelve.open(MAIL_STORAGE)
-            outbox = storage.get(OUTBOX, [])
-            outbox.append(message)
-            storage[OUTBOX] = outbox
-            storage.close()
-
-            msg_count += 1
-
-        return msg_count
+        if (not hasattr(mail, 'outbox') or
+                not isinstance(mail.outbox, PersistentList)):
+            mail.outbox = PersistentList(MAIL_STORAGE, clear_file=True)
