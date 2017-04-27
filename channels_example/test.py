@@ -5,7 +5,9 @@ from django.test import override_settings
 from aloe.testclass import TestCase as AloeTestCase
 
 
-@override_settings(DEBUG=True, ALLOWED_HOSTS=['*'])
+@override_settings(DEBUG=True)
+@override_settings(ALLOWED_HOSTS=['*'])
+@override_settings(EMAIL_BACKEND='channels_example.mail.EmailBackend')
 class TestCase(ChannelLiveServerTestCase, AloeTestCase):
     """
     Base test class for Django Gherkin tests in conjunction with Channels.
